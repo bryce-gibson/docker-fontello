@@ -2,7 +2,6 @@ FROM     ubuntu:14.04
 MAINTAINER Bryce Gibson "bryce.gibson@unico.com.au"
 
 # make sure the package repository is up to date
-RUN echo "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main universe" > /etc/apt/sources.list
 RUN apt-get update && apt-get upgrade
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 && echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | tee /etc/apt/sources.list.d/mongodb.list
 
