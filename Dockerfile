@@ -1,4 +1,4 @@
-FROM     ubuntu:14.04
+FROM ubuntu:14.04
 MAINTAINER Bryce Gibson "bryce.gibson@unico.com.au"
 
 # make sure the package repository is up to date
@@ -16,7 +16,9 @@ ADD ./application.yml /fontello/config/application.yml
 WORKDIR /fontello
 
 RUN apt-get install -y wget automake libtool ; yes | ./support/ttfautohint-ubuntu-12.04.sh && \
- apt-get clean autoclean && apt-get autoremove -y && rm -rf /var/lib/{apt,dpkg,cache,log}/
+    apt-get clean autoclean && apt-get autoremove -y && rm -rf /var/lib/{apt,dpkg,cache,log}/
+
+COPY ./entrypoint.js /usr/local/bin/entrypoint.js
 
 EXPOSE 3000
-CMD mongod & while ! nc -vz localhost 27017; do sleep 1; done; ./fontello.js
+CMD [ "node", "/usr/local/bin/entrypoint.js" ]
