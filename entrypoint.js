@@ -6,7 +6,7 @@ var setupLogging = function(target) {
   target.stderr.pipe(process.stderr)
 }
 
-var mongod = childProcess.spawn('mongod')
+var mongod = childProcess.spawn('mongod', ['--nojournal', '--noprealloc'])
   , fontello = null
 
 setupLogging(mongod)
