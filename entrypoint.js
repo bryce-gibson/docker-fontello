@@ -1,5 +1,10 @@
 var childProcess = require('child_process')
   , net = require('net')
+  , _startFontelloTimeout = parseInt(process.env.STARTUP_TIMEOUT, 10)
+  , startFontelloTimeout = isNaN(_startFontelloTimeout) ? 120e3 : _startFontelloTimeout
+  , fontelloTimeout = setTimeout(function() { process.exit(2) }, startFontelloTimeout)
+
+fontelloTimeout.unref()
 
 var setupLogging = function(target) {
   target.stdout.pipe(process.stdout)
@@ -35,6 +40,7 @@ console.log('Waiting for mongo.')
 
   fontelloConnection.on('connect', function() {
     console.log('Starting fontello.')
+    clearTimeout(fontelloTimeout)
     startFontello()
     this.end()
   })
