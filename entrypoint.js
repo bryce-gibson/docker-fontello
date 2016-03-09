@@ -11,21 +11,30 @@ var setupLogging = function(source) {
   source.stderr.pipe(process.stderr)
 }
 
-var mongod = childProcess.spawn('mongod', ['--nojournal', '--noprealloc'])
+var mongodRepair = childProcess.spawn('mongod', ['--repair'])
+  , mongod = null
   , fontello = null
 
-setupLogging(mongod)
+setupLogging(mongodRepair)
+
+mongodRepair.once('exit', function startMongod() {
+  mongodRepair = null
+  mongod = childProcess.spawn('mongod', ['--nojournal', '--noprealloc'])
+  setupLogging(mongod)
+})
 
 var cleanupFunc = function(signal) {
   return function() {
     console.log('Cleaning up because ' + signal + ' received.')
     var killTimeout = setTimeout(function() {
-      mongod.kill('SIGKILL')
+      mongodRepair && mongodRepair.kill('SIGKILL')
+      mongo && mongod.kill('SIGKILL')
       fontello && fontello.kill(signal)
       setTimeout(function() { process.exit(1) }, 50)
     }, 15e3)
     killTimeout.unref()
-    mongod.kill(signal)
+    mongodRepair && mongodRepair.kill(signal)
+    mongod && mongod.kill(signal)
     fontello && fontello.kill(signal)
   }
 }
@@ -35,6 +44,7 @@ var startFontello = function() {
 }
 
 console.log('Waiting for mongo.')
+
 ;(function waitForFontello() {
   var fontelloConnection = net.createConnection({ port: 27017 })
 
