@@ -6,9 +6,9 @@ var childProcess = require('child_process')
 
 fontelloTimeout.unref()
 
-var setupLogging = function(target) {
-  target.stdout.pipe(process.stdout)
-  target.stderr.pipe(process.stderr)
+var setupLogging = function(source) {
+  source.stdout.pipe(process.stdout)
+  source.stderr.pipe(process.stderr)
 }
 
 var mongod = childProcess.spawn('mongod', ['--nojournal', '--noprealloc'])
